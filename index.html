@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SafeNet Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/dashboard.js" defer></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div><a href="index.html"><strong>SafeNet</strong></a></div>
+    <div>
+      <a class="active" href="index.html">Dashboard</a>
+      <a href="policy.html">Policy Editor</a>
+      <a href="devices.html">Devices</a>
+      <a href="logs.html">Logs</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Network Dashboard</h1>
+    <p>Visual overview of SafeNet network connections.</p>
+
+    <div id="status" class="status-badge status-protected">🟢 Protected</div>
+
+    <canvas id="networkGraph" width="600" height="400" style="margin-top:30px; background:white; border-radius:10px;"></canvas>
+  </div>
+</body>
+</html>

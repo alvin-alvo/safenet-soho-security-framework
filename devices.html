@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Devices - SafeNet</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/devices.js" defer></script>
+</head>
+<body>
+  <div class="navbar">
+    <div><a href="index.html"><strong>SafeNet</strong></a></div>
+    <div>
+      <a href="index.html">Dashboard</a>
+      <a href="policy.html">Policy Editor</a>
+      <a class="active" href="devices.html">Devices</a>
+      <a href="logs.html">Logs</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Connected Devices</h1>
+    <table border="1" width="100%" cellpadding="8" style="border-collapse:collapse; text-align:center; background:white; border-radius:10px;">
+      <thead style="background:#e5e7eb;">
+        <tr>
+          <th>Device Name</th>
+          <th>SafeNet IP</th>
+          <th>Group</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="deviceTable"></tbody>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Policy Editor - SafeNet</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/policy.js" defer></script>
+</head>
+<body>
+  <div class="navbar">
+    <div><a href="index.html"><strong>SafeNet</strong></a></div>
+    <div>
+      <a href="index.html">Dashboard</a>
+      <a class="active" href="policy.html">Policy Editor</a>
+      <a href="devices.html">Devices</a>
+      <a href="logs.html">Logs</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Policy Editor</h1>
+    <textarea id="policyEditor" rows="15" cols="80" style="width:100%; border-radius:10px; padding:10px;">
+policies:
+  - group: admins
+    access: full
+  - group: guests
+    access: restricted
+    </textarea><br><br>
+
+    <button onclick="savePolicy()">💾 Save & Apply</button>
+    <button onclick="revertPolicy()">↩ Revert Changes</button>
+  </div>
+</body>
+</html>
