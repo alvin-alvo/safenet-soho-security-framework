@@ -1,0 +1,38 @@
+# SafeNet SOHO Security Framework - Python Dependencies
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Phase 1: In-Memory Cryptography Engine
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# No additional dependencies (uses stdlib asyncio)
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Phase 2: YAML Policy Parser & Database
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+pydantic>=2.0.0           # Strict input validation with type checking
+aiosqlite>=0.19.0         # Async SQLite database (non-blocking I/O)
+PyYAML>=6.0.1             # Safe YAML parsing (yaml.safe_load)
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Phase 3: Windows WireGuard Subprocess Driver
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# TBD (will use stdlib asyncio.subprocess)
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Phase 4: FastAPI Endpoints & JWT Authentication
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# fastapi[all]>=0.109.0   # Modern async web framework
+# uvicorn[standard]>=0.27.0  # ASGI server with TLS support
+# python-jose[cryptography]>=3.3.0  # JWT token handling
+# passlib[bcrypt]>=1.7.4  # Password hashing
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Phase 5: Typer CLI Interface
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# typer[all]>=0.9.0       # Modern CLI framework with type hints
+# rich>=13.7.0            # Beautiful terminal output
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Development & Testing
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+pytest>=8.0.0            # Unit testing framework
+pytest-asyncio>=0.23.0   # Async test support

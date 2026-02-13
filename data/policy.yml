@@ -1,0 +1,51 @@
+# SafeNet Policy Configuration
+# This file defines your Zero-Trust network topology
+# 
+# Security Notes:
+# - Device names: alphanumeric, underscore, hyphen only (prevents command injection)
+# - Default posture: DENY ALL (only explicitly allowed traffic is permitted)
+# - Groups: logical groupings for access control rules
+
+# Define network devices/peers
+devices:
+  # Work devices - trusted endpoints
+  - name: worklaptop
+    groups: [work, trusted]
+  
+  - name: workdesktop
+    groups: [work, trusted]
+  
+  # Mobile devices - partially trusted
+  - name: phone01
+    groups: [mobile, trusted]
+  
+  # IoT devices - untrusted by default
+  - name: smarttv
+    groups: [iot, untrusted]
+  
+  - name: smart_speaker
+    groups: [iot, untrusted]
+
+# Define access control rules
+access_rules:
+  # Allow work devices to communicate with other trusted devices
+  - from: work
+    to: trusted
+    action: allow
+  
+  # Allow mobile devices to reach work resources
+  - from: mobile
+    to: work
+    action: allow
+  
+  # DENY IoT devices from reaching work resources (explicit deny)
+  - from: iot
+    to: work
+    action: deny
+  
+  # DENY IoT devices from reaching mobile devices
+  - from: iot
+    to: mobile
+    action: deny
+
+# Default behavior: If no rule matches, traffic is DENIED (Zero-Trust principle)
