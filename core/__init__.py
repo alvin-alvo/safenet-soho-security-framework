@@ -22,7 +22,10 @@ __version__ = "0.4.0"
 __author__ = "SafeNet Development Team"
 
 # Import key generation function for module-level access
-from .keygen import generate_wireguard_keys
+from .keygen import (
+    generate_wireguard_keys,
+    derive_public_key
+)
 
 # Import database functions
 from .db import (
@@ -31,7 +34,8 @@ from .db import (
     get_device,
     list_devices,
     delete_device,
-    get_devices_in_group
+    get_devices_in_group,
+    allocate_next_ip
 )
 
 # Import policy parser
@@ -56,14 +60,29 @@ from .schemas import (
 # Import WireGuard engine (Phase 3)
 from .engine import (
     generate_config_string,
+    generate_server_config,
     start_safenet_tunnel,
     stop_safenet_tunnel,
-    get_tunnel_status
+    reload_wireguard_server,
+    get_tunnel_status,
+    get_active_peers,
+    get_persistent_server_keys
+)
+
+# Import server state management (Phase 6)
+from .state import (
+    set_server_keys,
+    get_server_public_key,
+    get_server_private_key,
+    is_server_running,
+    clear_server_keys,
+    get_server_state
 )
 
 __all__ = [
     # Keygen
     "generate_wireguard_keys",
+    "derive_public_key",
     
     # Database
     "init_db",
@@ -72,6 +91,7 @@ __all__ = [
     "list_devices",
     "delete_device",
     "get_devices_in_group",
+    "allocate_next_ip",
     
     # Policy
     "load_policy",
@@ -90,7 +110,19 @@ __all__ = [
     
     # Engine (Phase 3)
     "generate_config_string",
+    "generate_server_config",
     "start_safenet_tunnel",
     "stop_safenet_tunnel",
+    "reload_wireguard_server",
     "get_tunnel_status",
+    "get_active_peers",
+    "get_persistent_server_keys",
+    
+    # State Management (Phase 6)
+    "set_server_keys",
+    "get_server_public_key",
+    "get_server_private_key",
+    "is_server_running",
+    "clear_server_keys",
+    "get_server_state",
 ]

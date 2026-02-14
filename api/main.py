@@ -24,6 +24,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+import sys
+import asyncio
+
+# FIX: Force ProactorEventLoop on Windows for subprocess support (Uvicorn uses Selector by default)
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
 from api.routes import router
 from core import init_db
 
@@ -61,6 +68,20 @@ async def lifespan(app: FastAPI):
     logger.info("=" * 70)
     logger.info("SafeNet API Starting Up")
     logger.info("=" * 70)
+    
+    # Check Admin Privileges
+    from core.utils import is_admin
+    if not is_admin():
+        logger.critical("API SERVER MUST BE RUN AS ADMINISTRATOR")
+        logger.critical("WireGuard tunnel management requires elevated privileges.")
+        logger.critical("Please stop the server and restart it in an Administrator terminal.")
+        # We don't exit here to allow read-only operations, but key features will fail
+        print("\n\n" + "!"*80)
+        print("CRITICAL ERROR: NOT RUNNING AS ADMINISTRATOR")
+        print("WireGuard tunnel operations WILL fail.")
+        print("Please restart uvicorn in an Administrator terminal.")
+        print("!"*80 + "\n\n")
+
     
     # Initialize database
     try:

@@ -111,8 +111,9 @@ async def generate_wireguard_keys() -> Tuple[str, str]:
         
         # Pass the private key to stdin and wait for public key output
         # Security: The private_key string is encoded to bytes for stdin
+        # Windows Fix: Add newline to signal EOF and prevent subprocess hang
         stdout_public, stderr_public = await proc_public.communicate(
-            input=private_key.encode('utf-8')
+            input=(private_key + '\n').encode('utf-8')
         )
         
         # Validate successful execution
@@ -142,6 +143,9 @@ async def generate_wireguard_keys() -> Tuple[str, str]:
         
         return private_key, public_key
     
+
+        return private_key, public_key
+    
     except FileNotFoundError:
         # This error occurs when 'wg' is not found in the system PATH
         raise RuntimeError(
@@ -156,6 +160,41 @@ async def generate_wireguard_keys() -> Tuple[str, str]:
         raise RuntimeError(
             f"Unexpected error during key generation: {type(e).__name__}: {str(e)}"
         )
+
+
+async def derive_public_key(private_key: str) -> str:
+    """
+    Derive the WireGuard public key from a known private key.
+    
+    Used when loading existing server keys from disk config.
+    
+    Args:
+        private_key: Base64-encoded WireGuard private key
+        
+    Returns:
+        Public key string
+    """
+    try:
+        proc_public = await asyncio.create_subprocess_exec(
+            "wg",
+            "pubkey",
+            stdin=PIPE,
+            stdout=PIPE,
+            stderr=PIPE
+        )
+        
+        stdout_public, stderr_public = await proc_public.communicate(
+            input=(private_key + '\n').encode('utf-8')
+        )
+        
+        if proc_public.returncode != 0:
+            raise RuntimeError(f"wg pubkey failed: {stderr_public.decode('utf-8')}")
+            
+        return stdout_public.decode('utf-8').strip()
+        
+    except Exception as e:
+        raise RuntimeError(f"Failed to derive public key: {e}")
+
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

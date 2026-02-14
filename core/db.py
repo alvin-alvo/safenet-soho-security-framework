@@ -448,3 +448,36 @@ async def get_devices_in_group(
     except aiosqlite.Error as e:
         logger.error(f"Failed to get devices in group '{group_name}': {e}")
         raise RuntimeError(f"Database error while querying group: {e}")
+
+
+async def allocate_next_ip(db_path: Path = DEFAULT_DB_PATH) -> str:
+    """
+    Find the next available IP address in the 10.8.0.0/24 subnet.
+    
+    Scans the database for assigned IPs and returns the first unused one.
+    Starts at 10.8.0.2 (skipping server .1).
+    
+    Returns:
+        String IP address (e.g., "10.8.0.5") without CIDR.
+        
+    Raises:
+        RuntimeError: If subnet is full (253 clients max).
+    """
+    logger.debug("Allocating new IP address...")
+    devices = await list_devices(db_path)
+    
+    # Extract just the IP part (remove CIDR /24 etc)
+    used_ips = set()
+    for d in devices:
+        if d["ip_address"]:
+            ip = d["ip_address"].split("/")[0]
+            used_ips.add(ip)
+            
+    # Simple linear scan 10.8.0.2 -> 10.8.0.254
+    for i in range(2, 255):
+        candidate = f"10.8.0.{i}"
+        if candidate not in used_ips:
+            logger.info(f"Allocated IP: {candidate}")
+            return candidate
+            
+    raise RuntimeError("IP Pool Exhausted: No available IPs in 10.8.0.0/24")

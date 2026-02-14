@@ -1,24 +1,14 @@
 # SafeNet SOHO Security Framework - Python Dependencies
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Phase 1: In-Memory Cryptography Engine
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# No additional dependencies (uses stdlib asyncio)
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Phase 2: YAML Policy Parser & Database
+# Core & Database
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 pydantic>=2.0.0           # Strict input validation with type checking
 aiosqlite>=0.19.0         # Async SQLite database (non-blocking I/O)
 PyYAML>=6.0.1             # Safe YAML parsing (yaml.safe_load)
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Phase 3: Windows WireGuard Subprocess Driver
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# TBD (will use stdlib asyncio.subprocess)
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Phase 4: FastAPI Endpoints & JWT Authentication
+# API Server (FastAPI)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 fastapi>=0.109.0   # Modern async web framework
 uvicorn[standard]>=0.27.0  # ASGI server with hot reload
@@ -27,10 +17,13 @@ passlib[bcrypt]>=1.7.4  # Password hashing with bcrypt
 python-multipart>=0.0.6  # Form data parsing
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Phase 5: Typer CLI Interface
+# CLI & Utilities
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# typer[all]>=0.9.0       # Modern CLI framework with type hints
-# rich>=13.7.0            # Beautiful terminal output
+typer[all]>=0.9.0       # Modern CLI framework with type hints
+rich>=13.7.0            # Beautiful terminal output
+requests>=2.31.0        # HTTP client for CLI-to-API communication
+qrcode>=7.4.2           # QR Code generation for device enrollment
+pillow>=10.2.0          # Image processing for QR code generation
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Development & Testing

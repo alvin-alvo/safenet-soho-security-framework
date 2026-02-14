@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+
+# SafeNet Data
+data/
+*.db
+*.conf
+*.log
+
+# Sensitive
+.env
+.env.local
+
+# Build
+build/
+dist/
+*.spec
+
+# Session & Temporary
+COMMIT_MESSAGE.txt
+cli_help.txt
+test_qr.png
+*.tmp

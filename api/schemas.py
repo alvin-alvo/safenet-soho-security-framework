@@ -209,6 +209,73 @@ class NetworkResponse(BaseModel):
     }
 
 
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MONITORING SCHEMAS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+class DeviceStatus(BaseModel):
+    """
+    Real-time status of a connected device.
+    
+    Combines static DB info with dynamic WireGuard status.
+    """
+    name: str = Field(..., description="Device name")
+    ip_address: str = Field(..., description="Assigned IP address")
+    public_key: str = Field(..., description="WireGuard public key")
+    
+    # Dynamic fields from wg show dump
+    endpoint: Optional[str] = Field(None, description="Remote endpoint IP:Port")
+    latest_handshake: int = Field(0, description="Unix timestamp of last handshake")
+    transfer_rx: int = Field(0, description="Total bytes received")
+    transfer_tx: int = Field(0, description="Total bytes sent")
+    is_active: bool = Field(False, description="True if handshake < 3 mins ago")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "name": "laptop-01",
+                    "ip_address": "10.8.0.2",
+                    "public_key": "abc...",
+                    "endpoint": "203.0.113.5:54321",
+                    "latest_handshake": 1678888888,
+                    "transfer_rx": 1024000,
+                    "transfer_tx": 2048000,
+                    "is_active": True
+                }
+            ]
+        }
+    }
+
+
+class DeviceListResponse(BaseModel):
+    """
+    Response model for listing all devices with status.
+    """
+    devices: list[DeviceStatus]
+    count: int
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "devices": [
+                        {
+                            "name": "laptop-01",
+                            "ip_address": "10.8.0.2",
+                            "public_key": "abc...",
+                            "is_active": True
+                        }
+                    ],
+                    "count": 1
+                }
+            ]
+        }
+    }
+
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ERROR RESPONSE SCHEMAS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

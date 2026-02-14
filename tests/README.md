@@ -4,137 +4,80 @@ This directory contains all validation tests for the SafeNet SOHO Security Frame
 
 ## Running Tests
 
-### Individual Phase Tests
-
+### Phase 1: Cryptography Engine
 ```powershell
-# Phase 1: In-Memory Cryptography Engine
 python tests\test_phase1.py
+```
 
-# Phase 2: YAML Policy Parser & Database
+### Phase 2: Database & Policy
+```powershell
 python tests\test_phase2.py
-
-# Phase 3: WireGuard Subprocess Driver (not yet implemented)
-python tests\test_phase3.py
 ```
 
-### Phase 3 Tests
-
-**File**: `test_phase3.py`
-
-**Purpose**: Validates Windows WireGuard subprocess driver implementation
-
-**Test Coverage**:
-- WireGuard config generation (INI format)
-- Multi-peer configuration support
-- Windows absolute path resolution
-- Command injection prevention (no `shell=True`)
-- List-based subprocess arguments
-- Async subprocess execution
-- Tunnel lifecycle (skipped if not admin)
-
-**Run Command**:
+### Phase 3: WireGuard Driver
 ```powershell
 python tests\test_phase3.py
 ```
 
-**Manual Tunnel Test** (Requires Admin):
+### Phase 4: API & Authentication
 ```powershell
-python tests\test_tunnel_manual.py
+python tests\test_api.py
 ```
 
-This script performs full tunnel lifecycle testing:
-- Generates fresh WireGuard keys
-- Creates tunnel configuration 
-- Starts tunnel (installs Windows service)
-- Checks tunnel status
-- Stops tunnel (removes Windows service)
-- Verifies cleanup
+### Phase 5: CLI
+```powershell
+python tests\test_cli.py
+```
 
-**Live Network Validation Test** (Recommended - Requires Admin):
+---
+
+## Manual Tunnel Tests (Admin Only)
+
+**File**: `test_engine.py` (Recommended)
 ```powershell
 python tests\test_engine.py
 ```
+*Creates a real 30-second tunnel. Verifies Windows Service creation and IP assignment.*
 
-**PROVEN WORKING** [COMPLETE] - This script:
-- Creates a REAL WireGuard tunnel on Windows
-- Holds it open for 30 seconds
-- Instructions to verify with `ipconfig` (look for IP 10.8.0.1)
-- Automatically cleans up
-- **Validates Python control of Windows network stack**
+**File**: `test_tunnel_manual.py`
+```powershell
+python tests\test_tunnel_manual.py
+```
+*Full lifecycle test: Generates keys, creates config, starts service, checks status, stops service.*
 
-See [TESTING.md](../TESTING.md) for detailed testing guide.
+See [Testing Guide](../docs/TESTING.md) for detailed instructions.
 
-### Run All Tests
+---
+
+## Run All Tests
 
 ```powershell
 python tests\run_all_tests.py
 ```
 
-## Test Coverage
+---
 
-### Phase 1: In-Memory Cryptography Engine [COMPLETE]
-- [x] Async key generation via `asyncio.subprocess`
-- [x] WireGuard key format validation (44-char Base64)
-- [x] Cryptographic randomness verification
-- [x] Zero-disk-key architecture validation
+## Test Coverage Status
 
-**Status**: [COMPLETE] PASSING
+### Phase 1: In-Memory Cryptography [COMPLETE]
+- [x] Async key generation
+- [x] Zero-disk-key verification
 
-### Phase 2: YAML Policy Parser & Database [COMPLETE]
-- [x] Pydantic schema validation
-- [x] YAML policy parser (`yaml.safe_load`)
-- [x] Async SQLite database (aiosqlite)
-- [x] SQL injection protection
-- [x] Command injection protection (device name validation)
-- [x] Foreign key constraints
-- [x] Group membership queries
+### Phase 2: Database & Policy [COMPLETE]
+- [x] SQLite Async I/O
+- [x] Schema validation
 
-**Status**: [COMPLETE] PASSING
+### Phase 3: WireGuard Driver [COMPLETE]
+- [x] Config generation
+- [x] Service management (Start/Stop)
+- [x] Persistent state handling
 
-### Phase 3: WireGuard Subprocess Driver [IN PROGRESS]
-- [ ] WireGuard config file generation
-- [ ] Tunnel lifecycle management
-- [ ] IP address assignment
-- [ ] Configuration validation
+### Phase 4: API Endpoints [COMPLETE]
+- [x] JWT Authentication
+- [x] Device Enrollment
+- [x] Network Status
 
-**Status**: [IN PROGRESS] NOT YET IMPLEMENTED
-
-### Phase 4: FastAPI Endpoints & Authentication [IN PROGRESS]
-**Status**: [IN PROGRESS] NOT YET IMPLEMENTED
-
-### Phase 5: Typer CLI Interface [IN PROGRESS]
-**Status**: [IN PROGRESS] NOT YET IMPLEMENTED
-
-## Test Organization
-
-```
-tests/
-├── __init__.py # Test package initialization
-├── test_phase1.py # Phase 1 validation tests
-├── test_phase2.py # Phase 2 validation tests
-├── test_phase3.py # Phase 3 validation tests (placeholder)
-└── run_all_tests.py # Test runner for all phases
-```
-
-## Requirements
-
-All tests require the project dependencies to be installed:
-
-```powershell
-pip install -r requirements.txt
-```
-
-Phase 1 tests additionally require:
-- WireGuard for Windows installed
-- `wg.exe` in system PATH
-
-## Expected Output
-
-All tests should print validation results with `[PASS]` or `[FAIL]` markers.
-
-Successful test completion shows:
-```
-Phase X Status: VALIDATED
-```
-
-Failed tests will print error details and exit with code 1.
+### Phase 5: CLI [COMPLETE]
+- [x] Argument parsing
+- [x] API communication
+- [x] Output formatting (Rich)
