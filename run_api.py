@@ -3,6 +3,11 @@ import asyncio
 import sys
 
 if __name__ == "__main__":
+    # FIX: Enable ANSI escape sequences natively in Windows console
+    if sys.platform == 'win32':
+        import os
+        os.system("")
+        
     # FIX: Force ProactorEventLoop on Windows for subprocess support
     # (Uvicorn's default reload mechanism can sometimes use Selector on Windows)
     if sys.platform == 'win32':
@@ -13,4 +18,4 @@ if __name__ == "__main__":
     print(f"Event Loop Policy: {asyncio.get_event_loop_policy()}")
     print("-" * 50)
     
-    uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("api.main:app", host="127.0.0.1", port=8000, reload=False)

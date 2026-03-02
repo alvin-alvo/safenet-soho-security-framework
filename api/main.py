@@ -39,9 +39,14 @@ from core import init_db
 # LOGGING CONFIGURATION
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+from rich.logging import RichHandler
+
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(message)s",
+    datefmt="[%X]",
+    force=True, # Ensure we override any basicConfig called in imported modules (e.g. core.db)
+    handlers=[RichHandler(rich_tracebacks=True, markup=True)]
 )
 logger = logging.getLogger(__name__)
 
@@ -258,7 +263,7 @@ if __name__ == "__main__":
     
     uvicorn.run(
         "api.main:app",
-        host="0.0.0.0",  # Accessible from Windows hotspot
+        host="127.0.0.1",
         port=8000,
         reload=True,     # Auto-reload on code changes
         log_level="info"
