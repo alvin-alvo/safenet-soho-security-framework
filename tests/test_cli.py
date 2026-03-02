@@ -246,7 +246,7 @@ def test_enroll_command_success(mock_token, mock_requests_post, mock_qr_code):
     
     # Verify QR code was generated
     mock_qr_code.add_data.assert_called_once()
-    mock_qr_code.print_tty.assert_called_once()
+    mock_qr_code.print_ascii.assert_called_once()
 
 
 def test_enroll_command_device_already_exists(mock_token, mock_requests_post):
@@ -366,8 +366,9 @@ def test_list_command_shows_active_status(mock_token, mock_requests_get):
             {
                 "name": "active-device",
                 "ip_address": "10.8.0.2",
-                "public_key": "ActiveKey123456789012345678901234567890ab=",
-                "groups": ["default"]
+                "public_key": "ActiveKey123456789012345678901234567890ab=",  
+                "groups": ["default"],
+                "is_active": True
             }
         ]
     }
@@ -378,8 +379,9 @@ def test_list_command_shows_active_status(mock_token, mock_requests_get):
     active_response.json.return_value = {
         "active_peers": [
             {
-                "public_key": "ActiveKey123456789012345678901234567890ab=",
-                "latest_handshake": current_time - 60  # 1 minute ago (active)
+                "public_key": "ActiveKey123456789012345678901234567890ab=", 
+                "latest_handshake": current_time - 30,  # 30 seconds ago (active)
+                "is_active": True
             }
         ]
     }
@@ -391,7 +393,7 @@ def test_list_command_shows_active_status(mock_token, mock_requests_get):
     
     # Assertions
     assert result.exit_code == 0
-    assert "Active" in result.stdout
+    assert "Online" in result.stdout
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

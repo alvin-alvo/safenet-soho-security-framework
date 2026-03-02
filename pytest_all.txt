@@ -1,0 +1,87 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.5, pytest-8.3.4, pluggy-1.5.0 -- C:\Users\alvoa\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: D:\Projects\safenet-soho-security-framework
+plugins: anyio-4.7.0, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 20 items
+
+tests/test_cli.py::test_status_command_gateway_online PASSED             [  5%]
+tests/test_cli.py::test_status_command_gateway_offline PASSED            [ 10%]
+tests/test_cli.py::test_status_command_api_unreachable PASSED            [ 15%]
+tests/test_cli.py::test_start_command_success PASSED                     [ 20%]
+tests/test_cli.py::test_start_command_access_denied PASSED               [ 25%]
+tests/test_cli.py::test_stop_command_success PASSED                      [ 30%]
+tests/test_cli.py::test_stop_command_not_running PASSED                  [ 35%]
+tests/test_cli.py::test_enroll_command_success PASSED                    [ 40%]
+tests/test_cli.py::test_enroll_command_device_already_exists PASSED      [ 45%]
+tests/test_cli.py::test_enroll_command_invalid_name PASSED               [ 50%]
+tests/test_cli.py::test_list_command_with_devices PASSED                 [ 55%]
+tests/test_cli.py::test_list_command_empty_database PASSED               [ 60%]
+tests/test_cli.py::test_list_command_shows_active_status FAILED          [ 65%]
+tests/test_cli.py::test_remove_command_success PASSED                    [ 70%]
+tests/test_cli.py::test_remove_command_cancelled PASSED                  [ 75%]
+tests/test_cli.py::test_remove_command_device_not_found PASSED           [ 80%]
+tests/test_cli.py::test_full_lifecycle_integration PASSED                [ 85%]
+tests/test_cli.py::test_qr_code_generation_error PASSED                  [ 90%]
+tests/test_cli.py::test_api_timeout PASSED                               [ 95%]
+tests/test_cli.py::test_help_command PASSED                              [100%]
+
+================================== FAILURES ===================================
+____________________ test_list_command_shows_active_status ____________________
+
+mock_token = <MagicMock name='get_token' id='2350277256800'>
+mock_requests_get = <MagicMock name='get' id='2350277257136'>
+
+    def test_list_command_shows_active_status(mock_token, mock_requests_get):
+        """Test list command shows correct active status."""
+        import time
+        current_time = int(time.time())
+    
+        # Mock devices response
+        devices_response = Mock()
+        devices_response.status_code = 200
+        devices_response.json.return_value = {
+            "devices": [
+                {
+                    "name": "active-device",
+                    "ip_address": "10.8.0.2",
+                    "public_key": "ActiveKey12345678901234567890123456789ab=",
+                    "groups": ["default"]
+                }
+            ]
+        }
+    
+        # Mock active peers with recent handshake
+        active_response = Mock()
+        active_response.status_code = 200
+        active_response.json.return_value = {
+            "active_peers": [
+                {
+                    "public_key": "ActiveKey12345678901234567890123456789ab=",
+                    "latest_handshake": current_time - 30  # 30 seconds ago (active)
+                }
+            ]
+        }
+    
+        mock_requests_get.side_effect = [devices_response, active_response]
+    
+        # Run command
+        result = runner.invoke(app, ["list"])
+    
+        # Assertions
+        assert result.exit_code == 0
+>       assert "Active" in result.stdout
+E       AssertionError: assert 'Active' in '\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\\n\u2502 Network Devices                                                             \u2502\\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\\n\u2502           \u2502             \u2502            \u2502          \u2502        Last \u2502        Data \u2502\\n\u2502  Status   \u2502 Device Name \u2502 IP Address \u2502 Endpoint \u2502   Handshake \u2502     (Rx/Tx) \u2502\\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\\n\u2502 - Offline \u2502 active-dev\u2026 \u2502 10.8.0.2   \u2502 N/A      \u2502       Never \u2502   In:0.0B / \u2502\\n\u2502           \u2502             \u2502            \u2502          \u2502             \u2502    Out:0.0B \u2502\\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\\nTotal: 1 devices\\n\\n'
+E        +  where '\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\\n\u2502 Network Devices                                                             \u2502\\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\\n\u2502           \u2502             \u2502            \u2502          \u2502        Last \u2502        Data \u2502\\n\u2502  Status   \u2502 Device Name \u2502 IP Address \u2502 Endpoint \u2502   Handshake \u2502     (Rx/Tx) \u2502\\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\\n\u2502 - Offline \u2502 active-dev\u2026 \u2502 10.8.0.2   \u2502 N/A      \u2502       Never \u2502   In:0.0B / \u2502\\n\u2502           \u2502             \u2502            \u2502          \u2502             \u2502    Out:0.0B \u2502\\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\\nTotal: 1 devices\\n\\n' = <Result okay>.stdout
+
+tests\test_cli.py:394: AssertionError
+============================== warnings summary ===============================
+tests\test_cli.py:455
+  D:\Projects\safenet-soho-security-framework\tests\test_cli.py:455: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_cli.py::test_list_command_shows_active_status - AssertionEr...
+=================== 1 failed, 19 passed, 1 warning in 2.13s ===================

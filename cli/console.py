@@ -537,7 +537,7 @@ def list():
             status = "[yellow]Provisioned (Offline)[/yellow]"
         else:
             time_since_handshake = current_time - last_handshake
-            if time_since_handshake < 180:  # < 3 minutes
+            if time_since_handshake < 60:  # < 1 minute
                 status = "[bold green]✓ Active[/bold green]"
             else:
                 status = "[red]✖ Disconnected[/red]"

@@ -609,8 +609,8 @@ async def get_active_peers(tunnel_name: str = "safenet-vpn") -> Dict[str, Dict]:
             rx = int(parts[5])
             tx = int(parts[6])
             
-            # Active if handshake < 300s (5 mins) - Reduced flapping
-            is_active = (now - handshake) < 300 and handshake > 0
+            # Active if handshake < 60s (1 min)
+            is_active = (now - handshake) < 60 and handshake > 0
             
             peers[pub_key] = {
                 "endpoint": endpoint,

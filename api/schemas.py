@@ -230,7 +230,7 @@ class DeviceStatus(BaseModel):
     latest_handshake: int = Field(0, description="Unix timestamp of last handshake")
     transfer_rx: int = Field(0, description="Total bytes received")
     transfer_tx: int = Field(0, description="Total bytes sent")
-    is_active: bool = Field(False, description="True if handshake < 3 mins ago")
+    is_active: bool = Field(False, description="True if handshake < 1 min ago")
     
     model_config = {
         "json_schema_extra": {

@@ -112,7 +112,7 @@ _Requires Admin Privileges_
       "latest_handshake": 1707901234,  // Unix Timestamp
       "transfer_rx": 102400,           // Bytes received
       "transfer_tx": 204800,           // Bytes sent
-      "is_active": true                // True if handshake < 5 mins ago
+      "is_active": true                // True if handshake < 1 min ago
     }
   ],
   "count": 1
