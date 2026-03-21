@@ -32,3 +32,13 @@ COMMIT_MESSAGE.txt
 cli_help.txt
 test_qr.png
 *.tmp
+
+# Documentation & Archival
+Report/
+reference/
+archive/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

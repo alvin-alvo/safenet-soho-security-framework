@@ -314,16 +314,17 @@ async def start_safenet_tunnel(
             logger.info(f"Tunnel '{tunnel_name}' started successfully")
             if stdout_text:
                 logger.debug(f"stdout: {stdout_text}")
+            
             return True
         else:
             # Handle "Tunnel already installed and running"
             if "Tunnel already installed and running" in stderr_text:
                 logger.warning(f"Tunnel '{tunnel_name}' is already running. Restarting...")
                 
-                # Stop the existing tunnel
-                await stop_safenet_tunnel(tunnel_name, config_dir=config_dir)
+                # Stop the existing tunnel (ensure we do not wipe the config file)
+                await stop_safenet_tunnel(tunnel_name, config_dir=config_dir, delete_config=False)
                 
-                # Retry start (recursive call or just re-run command? Re-run command is safer here)
+                # Retry start
                 logger.info(f"Retrying start for '{tunnel_name}'...")
                 process_retry = await asyncio.create_subprocess_exec(
                     *wireguard_cmd,
@@ -337,6 +338,8 @@ async def start_safenet_tunnel(
                     return True
                 else:
                     stderr_text = stderr_retry.decode("utf-8", errors="replace").strip()
+                    logger.error(f"Tunnel restart failed: {stderr_text}")
+                    return False
             
             logger.error(f"Tunnel start failed (exit code: {process.returncode})")
             if stderr_text:
@@ -584,8 +587,12 @@ async def get_active_peers(tunnel_name: str = "safenet-vpn") -> Dict[str, Dict]:
             stderr=asyncio.subprocess.PIPE
         )
         stdout, stderr = await process.communicate()
+        stderr_text = stderr.decode("utf-8").strip()
         
         if process.returncode != 0:
+            logger.warning(f"wg show exited with code {process.returncode}: {stderr_text}")
+            if "Permission denied" in stderr_text:
+                logger.error("CRITICAL: API lacks Administrator privileges to read live peer status! Devices will appear Offline.")
             return {}
             
         output = stdout.decode("utf-8").strip()
@@ -609,8 +616,8 @@ async def get_active_peers(tunnel_name: str = "safenet-vpn") -> Dict[str, Dict]:
             rx = int(parts[5])
             tx = int(parts[6])
             
-            # Active if handshake < 60s (1 min)
-            is_active = (now - handshake) < 60 and handshake > 0
+            # Active if handshake < 180s (3 mins) - WireGuard natively handshakes every 120s
+            is_active = (now - handshake) < 180 and handshake > 0
             
             peers[pub_key] = {
                 "endpoint": endpoint,

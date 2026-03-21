@@ -15,26 +15,13 @@ SafeNet implements a rigid **Hub-and-Spoke** topology where the central gateway 
 
 ### System Topology
 
-```mermaid
-graph TD
-    subgraph CP [Control Plane]
-        CLI[Typer CLI] -->|Authenticated API Calls| API[FastAPI Server]
-        API <--> DB[(SQLite Storage)]
-    end
+![System Architecture](docs/assets/system%20architecture.png)
 
-    subgraph DP [Data Plane]
-        API -->|Subprocess Orchestration| KRNL[Windows Kernel / WireGuard]
-    end
+*The Core Hub-and-Spoke Topology with robust Control & Data Planes*
 
-    subgraph EP [Isolated Endpoints]
-        KRNL -.->|/32 Logic| DA[Device A /10.0.0.2]
-        KRNL -.->|/32 Logic| DB_EP[Device B /10.0.0.3]
-    end
+### Data Flow
 
-    style KRNL fill:#f9f,stroke:#333,stroke-width:2px
-    style CP fill:#e1f5fe,stroke:#01579b
-    style DP fill:#fff3e0,stroke:#e65100
-```
+![Data Flow Diagram](docs/assets/data%20flow%20diagram.png)
 
 > **Note on Microsegmentation**: By assigning unique /32 addresses and managing the AllowedIPs table dynamically, SafeNet prevents unauthorized east-west traffic between peers at the kernel level.
 

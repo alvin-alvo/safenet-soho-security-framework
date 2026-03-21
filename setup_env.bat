@@ -1,44 +1,46 @@
 @echo off
-TITLE SafeNet Environment Setup
-CLS
+setlocal enabledelayedexpansion
+TITLE SafeNet Enterprise SOHO Framework - Setup
 
-ECHO ========================================================
-ECHO    SafeNet SOHO Security Framework - Setup Wizard
-ECHO ========================================================
-ECHO.
+echo ========================================================
+echo   SafeNet Zero-Trust Network Access Framework Setup
+echo ========================================================
+echo.
 
-:: 1. Check Python
+:: 1. Check Python installation
 python --version >nul 2>&1
-IF %ERRORLEVEL% NEQ 0 (
-    ECHO [ERROR] Python is not installed or not in PATH.
-    ECHO Please install Python 3.10+ from python.org and try again.
-    PAUSE
-    EXIT /B 1
+if !ERRORLEVEL! NEQ 0 (
+    echo [ERROR] Python is not installed or not in PATH.
+    echo Please install Python 3.10+ and add it to PATH.
+    pause
+    exit /b 1
 )
 
-:: 2. Create Venv
-IF NOT EXIST "venv" (
-    ECHO [+] Creating Python Virtual Environment (venv)...
-    python -m venv venv
-) ELSE (
-    ECHO [.] Virtual Environment already exists.
+:: 2. Setup Virtual Environment
+if not exist ".venv" (
+    echo [+] Creating Python Virtual Environment .venv...
+    python -m venv .venv
+) else (
+    echo [+] Virtual Environment already exists.
 )
 
-:: 3. Install Dependencies
-ECHO [+] Installing Dependencies...
-call venv\Scripts\activate.bat
+:: 3. Install/Upgrade Dependencies
+echo [+] Upgrading pip and installing dependencies...
+call .venv\Scripts\activate.bat
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-IF %ERRORLEVEL% NEQ 0 (
-    ECHO [ERROR] Failed to install requirements.
-    PAUSE
-    EXIT /B 1
+if !ERRORLEVEL! NEQ 0 (
+    echo [ERROR] Failed to install requirements.
+    pause
+    exit /b 1
 )
 
-ECHO.
-ECHO ========================================================
-ECHO    SETUP COMPLETE!
-ECHO ========================================================
-ECHO.
-ECHO You can now run the server using 'run_server.bat'
-ECHO.
-PAUSE
+echo.
+echo ========================================================
+echo   SETUP COMPLETE!
+echo ========================================================
+echo.
+echo You can now start the gateway using 'run_server.bat'
+echo or run tests using 'run.bat'
+echo.
+pause

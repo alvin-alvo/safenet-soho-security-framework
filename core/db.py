@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS devices (
     name TEXT NOT NULL UNIQUE,
     public_key TEXT,
     ip_address TEXT,
+    last_endpoint TEXT,
+    last_handshake INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -275,7 +277,7 @@ async def get_device(
             # SECURITY: Parameterized query prevents SQL injection
             async with db.execute(
                 """
-                SELECT id, name, public_key, ip_address, created_at, updated_at
+                SELECT id, name, public_key, ip_address, last_endpoint, last_handshake, created_at, updated_at
                 FROM devices
                 WHERE name = ?
                 """,
@@ -331,7 +333,7 @@ async def list_devices(db_path: Path = DEFAULT_DB_PATH) -> List[Dict[str, Any]]:
             db.row_factory = aiosqlite.Row
             
             async with db.execute(
-                "SELECT id, name, public_key, ip_address, created_at, updated_at FROM devices ORDER BY name"
+                "SELECT id, name, public_key, ip_address, last_endpoint, last_handshake, created_at, updated_at FROM devices ORDER BY name"
             ) as cursor:
                 devices = []
                 
@@ -481,3 +483,24 @@ async def allocate_next_ip(db_path: Path = DEFAULT_DB_PATH) -> str:
             return candidate
             
     raise RuntimeError("IP Pool Exhausted: No available IPs in 10.8.0.0/24")
+
+async def update_device_connection(
+    public_key: str, 
+    last_endpoint: str, 
+    last_handshake: int, 
+    db_path: Path = DEFAULT_DB_PATH
+) -> None:
+    """Update last known connection metrics for a device by public key."""
+    try:
+        async with aiosqlite.connect(db_path) as db:
+            await db.execute(
+                """
+                UPDATE devices 
+                SET last_endpoint = ?, last_handshake = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE public_key = ?
+                """,
+                (last_endpoint, last_handshake, public_key)
+            )
+            await db.commit()
+    except aiosqlite.Error as e:
+        logger.error(f"Failed to update device connection tracking: {e}")

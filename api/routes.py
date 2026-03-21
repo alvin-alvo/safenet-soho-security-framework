@@ -371,21 +371,37 @@ async def get_all_devices(
     
     device_list = []
     
+    from core.db import update_device_connection
     for device in db_devices:
         # Match by Public Key
         pub_key = device["public_key"]
         peer_status = active_peers.get(pub_key, {})
         
+        is_active = peer_status.get("is_active", False)
+        
+        if is_active:
+            # Tunnel is alive, update database cache
+            endpoint = peer_status.get("endpoint")
+            latest_handshake = peer_status.get("latest_handshake", 0)
+            await update_device_connection(pub_key, endpoint, latest_handshake)
+        else:
+            # Tunnel is asleep, restore database cache
+            endpoint = peer_status.get("endpoint") or device.get("last_endpoint")
+            latest_handshake = peer_status.get("latest_handshake") or device.get("last_handshake", 0)
+            # Make sure empty strings or None are handled explicitly
+            if latest_handshake is None:
+                latest_handshake = 0
+            
         # Build status object
         status_obj = DeviceStatus(
             name=device["name"],
             ip_address=device["ip_address"] or "Unassigned",
             public_key=pub_key or "Unknown",
-            endpoint=peer_status.get("endpoint"),
-            latest_handshake=peer_status.get("latest_handshake", 0),
+            endpoint=endpoint,
+            latest_handshake=latest_handshake,
             transfer_rx=peer_status.get("transfer_rx", 0),
             transfer_tx=peer_status.get("transfer_tx", 0),
-            is_active=peer_status.get("is_active", False)
+            is_active=is_active
         )
         device_list.append(status_obj)
         
